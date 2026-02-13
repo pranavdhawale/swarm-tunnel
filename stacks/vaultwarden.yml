@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    environment:
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=false
+      - ADMIN_TOKEN=REPLACE_WITH_STRONG_TOKEN
+      - DOMAIN=https://vw.domain.com
+    volumes:
+      - vaultwarden_data:/data
+    networks:
+      - public_edge_net
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  vaultwarden_data:
+    external: true
+
+networks:
+  public_edge_net:
+    external: true
