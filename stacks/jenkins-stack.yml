@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  jenkins:
+    image: custom-jenkins:lts
+    user: root # Explicitly run as root to access docker socket
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - public_edge_net # So it can be reached via Tunnel
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  public_edge_net:
+    external: true
+
+volumes:
+  jenkins_home:

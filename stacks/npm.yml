@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    restart: always
+    ports:
+      - "80:80"   # Public HTTP (optional if using Tunnel only, but good for completeness)
+      - "81:81"   # Admin UI
+      - "443:443" # Public HTTPS
+    environment:
+      # We'll use SQLite for simplicity. Data is persisted in the 'data' volume.
+      DB_SQLITE_FILE: "/data/database.sqlite"
+      DISABLE_IPV6: 'true'
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - public_edge_net
+
+networks:
+  public_edge_net:
+    external: true
+
+volumes:
+  npm_data:
+  npm_letsencrypt:
